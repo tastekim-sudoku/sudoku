@@ -1,4 +1,0 @@
-class Line {
-
-  initial
-}

@@ -1,25 +1,15 @@
-enum RowType {
+enum LineType {
   first,
   second,
   third,
+  none,
 }
 
-enum ColumnType {
-  first,
-  second,
-  third,
-}
-
-Map<RowType, List<int>> rowPosition = {
-  RowType.first: [0, 1, 2],
-  RowType.second: [3, 4, 5],
-  RowType.third: [6, 7, 8],
-};
-
-Map<ColumnType, List<int>> columnPosition = {
-  ColumnType.first: [0, 3, 6],
-  ColumnType.second: [1, 4, 7],
-  ColumnType.third: [2, 5, 8],
+Map<LineType, List<int>> linePosition = {
+  LineType.first: [0, 1, 2],
+  LineType.second: [3, 4, 5],
+  LineType.third: [6, 7, 8],
+  LineType.none: [],
 };
 
 Map<int, List<int>> connectedBigBlock = {

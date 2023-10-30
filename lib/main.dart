@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku/view/home.dart';
 
 import 'board/gameboard.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const GameBoard(),
+      home: Home(),
     );
   }
 }

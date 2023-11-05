@@ -96,6 +96,15 @@ class _SudokuBoardState extends State<SudokuBoard> {
     Position position = Position(index: index);
 
     bool isPristine = puzzle.board()!.cellAt(position).prefill()!;
+    int cellNum = puzzle.board()!.cellAt(position).getValue()!;
+
+    /// 잘못된 숫자 입력 시 같은 값을 가진 셀의 글씨 표시
+    int selectedNum = sudokuState.getLastInsertNum;
+    if (sudokuState.getWrongSelect && cellNum == selectedNum) {
+      return Colors.redAccent;
+    }
+
+    /// 처음 초기화된 값들은 검정색으로 표시
     if (isPristine) {
       // bool isSegViolated = puzzle.board()!.isSegmentViolated(position);
       // bool isRowViolated = puzzle.board()!.isRowViolated(position);
@@ -114,7 +123,8 @@ class _SudokuBoardState extends State<SudokuBoard> {
     int answer = puzzle.solvedBoard()!.cellAt(position).getValue()!;
     int userAnswer = puzzle.board()!.cellAt(position).getValue()!;
 
-    // if (isSegViolated || isRowViolated || isColViolated) {
+
+    /// 정답지랑 비교
     if (userAnswer != 0 && userAnswer != answer) {
       return Colors.redAccent;
     } else {

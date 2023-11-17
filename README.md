@@ -1,6 +1,6 @@
 # sudoku
 
-My second app.
+린이어 연결햇다~
 
 ## Getting Started
 

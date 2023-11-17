@@ -1,6 +1,6 @@
 # sudoku
 
-린이어 연결햇다~!!!
+린이어 연결햇다~!!!!
 
 ## Getting Started
 

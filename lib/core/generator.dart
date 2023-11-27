@@ -27,7 +27,3 @@ class Generator {
     print("=====================================");
   }
 }
-
-class GridMaker {
-
-}

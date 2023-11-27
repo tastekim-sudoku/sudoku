@@ -23,11 +23,11 @@ linter:
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
-    - avoid_empty_else
-    - avoid_relative_lib_imports
-    - await_only_futures
-    - camel_case_types
-    - constant_identifier_names
+    - avoid_empty_else # 불필요한 else 문을 피하도록 권장. if 문의 모든 분기가 반환 값을 가지면 else 는 필요없습니다.
+    - avoid_relative_lib_imports # 라이브러리 파일을 상대 경로가 아닌 패키지 경로를 사용하여 임포트하도록 권장.
+    - await_only_futures # await 키워드는 오직 Future 객체에만 사용해야 합니다.
+    - camel_case_types # 클래스와 열거형 타입의 이름은 카멜 케이스를 사용하도록 권장.
+    - constant_identifier_names # 상수 이름은 대문자와 밑줄을 사용하는 것이 권장.
     - curly_braces_in_flow_control_structures
     - empty_constructor_bodies
     - file_names

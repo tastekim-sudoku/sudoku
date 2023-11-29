@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sudoku/view/home.dart';
 
-import 'board/gameboard.dart';
-
 void main() {
   runApp(const MyApp());
 }

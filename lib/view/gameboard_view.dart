@@ -34,20 +34,43 @@ class _GameBoardViewState extends State<GameBoardView> {
                 child: MediaQuery.removePadding(
                   context: context,
                   child: GridView.builder(
+                    shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                     ),
                     itemCount: 9,
                     itemBuilder: (context, index) {
                       /// 여기에 segment 를 넣으면 될 듯.
                       return Container(
+                        clipBehavior: Clip.hardEdge,
                         width: size.width(150),
                         height: size.width(150),
-                        margin: EdgeInsets.all(2),
                         decoration: BoxDecoration(
-                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(size.width(20)),
+                        ),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                          ),
+                          itemCount: 9,
+                          itemBuilder: (context, index) {
+                            /// puzzle 의 getSegment 로 cell 나열하기
+                            return Container(
+                              margin: EdgeInsets.all(size.width(1)),
+                              width: size.width(150),
+                              height: size.width(150),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                              ),
+                            );
+                          },
                         ),
                       );
                     },

@@ -37,7 +37,9 @@ class _HomeState extends State<Home> {
                               ConnectionState.done) {
                             Puzzle puzzle = snapshot.data!;
                             sudoku.newGame = puzzle;
-                            return GameBoardView();
+                            return GameBoardView(
+                              puzzle: puzzle,
+                            );
                             // return GameBoard(
                             //   puzzle: puzzle,
                             // );

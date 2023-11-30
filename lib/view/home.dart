@@ -5,6 +5,8 @@ import 'package:sudoku/util/size.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 import 'package:get/get.dart';
 
+import 'gameboard_view.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -35,9 +37,10 @@ class _HomeState extends State<Home> {
                               ConnectionState.done) {
                             Puzzle puzzle = snapshot.data!;
                             sudoku.newGame = puzzle;
-                            return GameBoard(
-                              puzzle: puzzle,
-                            );
+                            return GameBoardView();
+                            // return GameBoard(
+                            //   puzzle: puzzle,
+                            // );
                           }
                           return CircularProgressIndicator();
                         }),

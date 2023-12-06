@@ -6,7 +6,7 @@ class SizeConfig {
   SizeConfig(this.context);
 
   double width(double number) {
-    return number * (MediaQuery.of(context).size.width / 390);
+    return number * (MediaQuery.of(context).size.width / 375);
   }
 }
 

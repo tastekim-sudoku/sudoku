@@ -4,8 +4,7 @@ import 'package:sudoku/util/icon.dart';
 import 'package:sudoku/util/size.dart';
 import 'package:sudoku/util/theme.dart';
 import 'package:sudoku_api/sudoku_api.dart';
-
-import '';
+import 'gameboard/feature_buttons.dart';
 import 'gameboard/input_buttons.dart';
 
 class GameBoardView extends StatefulWidget {
@@ -58,6 +57,7 @@ class _GameBoardViewState extends State<GameBoardView> {
             SizedBox(
               height: size.width(8),
             ),
+            /// 일시정지, 시간, 오답갯수
             SizedBox(
               height: size.width(48),
               child: Padding(
@@ -124,6 +124,8 @@ class _GameBoardViewState extends State<GameBoardView> {
                 ),
               ),
             ),
+
+            /// 보드판
             SizedBox(
               width: size.width(348),
               height: size.width(348),
@@ -195,6 +197,8 @@ class _GameBoardViewState extends State<GameBoardView> {
             SizedBox(
               height: size.width(32),
             ),
+
+            /// 인풋 버튼
             Center(
               child: Wrap(
                 direction: Axis.horizontal,
@@ -202,8 +206,10 @@ class _GameBoardViewState extends State<GameBoardView> {
                 children: List.generate(9, (index) {
                   return Padding(
                     padding: EdgeInsets.only(
-                      left: index == 0 ? 0 : size.width(5), // 첫 번째 요소에는 왼쪽 패딩만 적용
-                      right: index == 8 ? 0 : size.width(5), // 마지막 요소에는 오른쪽 패딩만 적용
+                      left: index == 0 ? 0 : size.width(5),
+                      // 첫 번째 요소에는 왼쪽 패딩만 적용
+                      right:
+                          index == 8 ? 0 : size.width(5), // 마지막 요소에는 오른쪽 패딩만 적용
                     ),
                     child: InputButton(
                       text: '${index + 1}',
@@ -217,6 +223,35 @@ class _GameBoardViewState extends State<GameBoardView> {
               height: size.width(32),
             ),
             /// 지우기, 메모, 힌트 아이콘
+            SizedBox(
+              height: size.width(70),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FeatureButton(
+                    size: size,
+                    icon: CustomIcon.remove(size.width(28)),
+                    text: '지우기',
+                  ),
+                  SizedBox(
+                    width: size.width(72),
+                  ),
+                  FeatureButton(
+                    size: size,
+                    icon: CustomIcon.memo(size.width(28)),
+                    text: '메모',
+                  ),
+                  SizedBox(
+                    width: size.width(72),
+                  ),
+                  FeatureButton(
+                    size: size,
+                    icon: CustomIcon.hint(size.width(28)),
+                    text: '힌트',
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -22,4 +22,25 @@ class CustomIcon {
     width: size,
     fit: BoxFit.scaleDown,
   );
+
+  static SvgPicture remove(double size) => SvgPicture.asset(
+    'assets/icons/icon-pencil-mono.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture memo(double size) => SvgPicture.asset(
+    'assets/icons/Group.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture hint(double size) => SvgPicture.asset(
+    'assets/icons/icon-lock-mono.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
 }

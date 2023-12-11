@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sudoku/state/sudoku.dart';
 import 'package:sudoku/util/icon.dart';
 import 'package:sudoku/util/size.dart';
 import 'package:sudoku/util/theme.dart';
@@ -20,6 +22,8 @@ class GameBoardView extends StatefulWidget {
 }
 
 class _GameBoardViewState extends State<GameBoardView> {
+  SudokuState sudoku = Get.put(SudokuState());
+
   @override
   Widget build(BuildContext context) {
     SizeConfig size = SizeConfig(context);
@@ -57,6 +61,7 @@ class _GameBoardViewState extends State<GameBoardView> {
             SizedBox(
               height: size.width(8),
             ),
+
             /// 일시정지, 시간, 오답갯수
             SizedBox(
               height: size.width(48),
@@ -139,8 +144,25 @@ class _GameBoardViewState extends State<GameBoardView> {
                     crossAxisCount: 3,
                   ),
                   itemCount: 9,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (context, bIndex) {
                     /// 여기에 segment 를 넣으면 될 듯.
+
+                    // 행과 열 계산
+                    int row = bIndex ~/ 3;
+                    int column = bIndex % 3;
+
+                    // getSegment 하면 될 줄 알았는데 더럽게 안되고있음
+                    // getSegment 내부 로직을 가져와서 하니까 됨.
+                    List<List<Cell>> _matrix = _puzzle.board()!.matrix()!;
+                    List<Cell> _tmpSeg = [];
+
+                    for (int rInc = 0; rInc < 3; rInc++) {
+                      for (int cInc = 0; cInc < 3; cInc++) {
+                        _tmpSeg.add(_matrix![(row * 3) + rInc as int]
+                            [(column * 3) + cInc as int]);
+                      }
+                    }
+
                     return Container(
                       clipBehavior: Clip.hardEdge,
                       margin: EdgeInsets.all(size.width(1)),
@@ -164,11 +186,13 @@ class _GameBoardViewState extends State<GameBoardView> {
                           crossAxisCount: 3,
                         ),
                         itemCount: 9,
-                        itemBuilder: (context, index) {
+                        itemBuilder: (context, sIndex) {
                           /// puzzle 의 getSegment 로 cell 나열하기
+                          Cell val = _tmpSeg[sIndex];
+
                           // 행과 열 계산
-                          int row = index ~/ 3;
-                          int column = index % 3;
+                          int row = sIndex ~/ 3;
+                          int column = sIndex % 3;
 
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
@@ -177,14 +201,39 @@ class _GameBoardViewState extends State<GameBoardView> {
                           if (row == 2) margin = margin.copyWith(bottom: 0);
                           if (column == 2) margin = margin.copyWith(right: 0);
 
-                          return Container(
-                            margin: margin,
-                            width: size.width(36),
-                            height: size.width(36),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.circular(size.width(4)),
+                          return InkWell(
+                            onTap: () {
+                              sudoku.clickPixel(val.getPosition()!);
+                              setState(() {});
+                            },
+                            child: Container(
+                              margin: margin,
+                              width: size.width(36),
+                              height: size.width(36),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: val.position!.index ==
+                                        sudoku.selectPixel.index
+                                    ? Border.all(
+                                        color: ColorConfig.blue500(),
+                                        width: size.width(2),
+                                      )
+                                    : Border.all(width: 0, color: Colors.white,),
+                                borderRadius:
+                                    BorderRadius.circular(size.width(4)),
+                              ),
+                              child: Text(
+                                '${val.getValue() == 0 ? '' : val.getValue()}',
+                                style: TextStyle(
+                                  fontSize: size.width(24),
+                                  fontWeight: FontWeight.w500,
+                                  color: val.position!.index ==
+                                          sudoku.selectPixel.index
+                                      ? ColorConfig.blue500()
+                                      : ColorConfig.grey400(),
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -222,6 +271,7 @@ class _GameBoardViewState extends State<GameBoardView> {
             SizedBox(
               height: size.width(32),
             ),
+
             /// 지우기, 메모, 힌트 아이콘
             SizedBox(
               height: size.width(70),

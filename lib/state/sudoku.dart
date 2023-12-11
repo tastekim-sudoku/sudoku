@@ -8,7 +8,7 @@ import 'package:sudoku_api/sudoku_api.dart';
 /// markup: 해당 cell 에 메모된 값. get, set, remove, lastMarkupRemove, clear 등 있음.
 
 class SudokuState extends GetxController {
-  RxInt isSelectPixel = 81.obs;
+  Rx<Position> isSelectPixel = Position(row: -2, column: -2).obs;
   RxInt lastInsertNum = 0.obs;
   RxBool isWrongNum = false.obs;
   RxInt wrongCount = 0.obs;
@@ -81,11 +81,11 @@ class SudokuState extends GetxController {
   }
 
   /// 클릭한 픽셀 업데이트
-  void clickPixel(int index) {
-    if (index == isSelectPixel.value) {
-      isSelectPixel.value = 82;
+  void clickPixel(Position position) {
+    if (position.index == isSelectPixel.value.index) {
+      isSelectPixel.value = Position(row: -2, column: -2);
     } else {
-      isSelectPixel.value = index;
+      isSelectPixel.value = position;
     }
   }
 
@@ -111,19 +111,19 @@ class SudokuState extends GetxController {
   Future<Puzzle> generateBoard(String type) async {
     PuzzleOptions puzzleOptions = PuzzleOptions(
       patternName: type,
-      clues: 60,
+      clues: 38,
     );
 
     Puzzle puzz = Puzzle(puzzleOptions);
     await puzz.generate();
 
-    for (int i = 0; i < 9; i++) {
-      for (int j = 0; j < 9; j++) {
-        // gameMap.value[i]?[j] = puzz.board()!.getRow(i)[j].getValue()!;
-        /// 각 cell 별 좌표와 값
-        print('${puzz.board()!.getRow(i)[j].getPosition()!.grid} : ${puzz.board()!.getRow(i)[j].getValue()!} -> ${puzz.board()!.cellAt(Position(row: i, column: j)).isPristine}');
-      }
-    }
+    // for (int i = 0; i < 9; i++) {
+    //   for (int j = 0; j < 9; j++) {
+    //     // gameMap.value[i]?[j] = puzz.board()!.getRow(i)[j].getValue()!;
+    //     /// 각 cell 별 좌표와 값
+    //     print('${puzz.board()!.getRow(i)[j].getPosition()!.grid} : ${puzz.board()!.getRow(i)[j].getValue()!} -> ${puzz.board()!.cellAt(Position(row: i, column: j)).isPristine}');
+    //   }
+    // }
 
     return puzz;
   }

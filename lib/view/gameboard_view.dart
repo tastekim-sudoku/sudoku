@@ -148,18 +148,18 @@ class _GameBoardViewState extends State<GameBoardView> {
                     /// 여기에 segment 를 넣으면 될 듯.
 
                     // 행과 열 계산
-                    int row = bIndex ~/ 3;
-                    int column = bIndex % 3;
+                    int bRow = bIndex ~/ 3;
+                    int bColumn = bIndex % 3;
 
                     // getSegment 하면 될 줄 알았는데 더럽게 안되고있음
                     // getSegment 내부 로직을 가져와서 하니까 됨.
-                    List<List<Cell>> _matrix = _puzzle.board()!.matrix()!;
-                    List<Cell> _tmpSeg = [];
+                    List<List<Cell>> matrix = _puzzle.board()!.matrix()!;
+                    List<Cell> tmpSeg = [];
 
                     for (int rInc = 0; rInc < 3; rInc++) {
                       for (int cInc = 0; cInc < 3; cInc++) {
-                        _tmpSeg.add(_matrix![(row * 3) + rInc as int]
-                            [(column * 3) + cInc as int]);
+                        tmpSeg.add(
+                            matrix![(bRow * 3) + rInc][(bColumn * 3) + cInc]);
                       }
                     }
 
@@ -188,11 +188,19 @@ class _GameBoardViewState extends State<GameBoardView> {
                         itemCount: 9,
                         itemBuilder: (context, sIndex) {
                           /// puzzle 의 getSegment 로 cell 나열하기
-                          Cell val = _tmpSeg[sIndex];
+                          Cell val = tmpSeg[sIndex];
 
                           // 행과 열 계산
                           int row = sIndex ~/ 3;
                           int column = sIndex % 3;
+
+                          int sRow = val.position!.index! ~/ 9;
+                          int sColumn = val.position!.index! % 9;
+                          bool selectCell =
+                              val.position!.index == sudoku.selectPixel.index;
+
+                          bool selectGrid = sudoku.getSelectRow == sRow ||
+                              sudoku.getSelectColumn == sColumn;
 
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
@@ -212,14 +220,22 @@ class _GameBoardViewState extends State<GameBoardView> {
                               height: size.width(36),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: val.position!.index ==
-                                        sudoku.selectPixel.index
+                                color: selectGrid
+                                    ? selectCell
+                                        ? Colors.white
+                                        : ColorConfig.blue50()
+                                    : Colors.white,
+                                border: selectCell
                                     ? Border.all(
                                         color: ColorConfig.blue500(),
                                         width: size.width(2),
                                       )
-                                    : Border.all(width: 0, color: Colors.white,),
+                                    : Border.all(
+                                        width: 2,
+                                        color: selectGrid
+                                            ? ColorConfig.blue50()
+                                            : Colors.white,
+                                      ),
                                 borderRadius:
                                     BorderRadius.circular(size.width(4)),
                               ),
@@ -228,8 +244,8 @@ class _GameBoardViewState extends State<GameBoardView> {
                                 style: TextStyle(
                                   fontSize: size.width(24),
                                   fontWeight: FontWeight.w500,
-                                  color: val.position!.index ==
-                                          sudoku.selectPixel.index
+                                  height: 0,
+                                  color: selectCell
                                       ? ColorConfig.blue500()
                                       : ColorConfig.grey400(),
                                 ),

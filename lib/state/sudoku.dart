@@ -9,6 +9,8 @@ import 'package:sudoku_api/sudoku_api.dart';
 
 class SudokuState extends GetxController {
   Rx<Position> isSelectPixel = Position(row: -2, column: -2).obs;
+  RxInt selectRow = 9.obs;
+  RxInt selectColumn = 9.obs;
   RxInt lastInsertNum = 0.obs;
   RxBool isWrongNum = false.obs;
   RxInt wrongCount = 0.obs;
@@ -19,6 +21,8 @@ class SudokuState extends GetxController {
   get getWrongCount => wrongCount.value;
   get getWrongSelect => isWrongNum.value;
   get getLastInsertNum => lastInsertNum.value;
+  get getSelectRow => selectRow.value;
+  get getSelectColumn => selectColumn.value;
   
   /// cell 에 숫자 입력하기
   set insertNum(int num) {
@@ -84,8 +88,12 @@ class SudokuState extends GetxController {
   void clickPixel(Position position) {
     if (position.index == isSelectPixel.value.index) {
       isSelectPixel.value = Position(row: -2, column: -2);
+      selectRow.value = 9;
+      selectColumn.value = 9;
     } else {
       isSelectPixel.value = position;
+      selectRow.value = position.index! ~/ 9;
+      selectColumn.value = position.index! % 9;
     }
   }
 

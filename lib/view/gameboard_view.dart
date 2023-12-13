@@ -194,13 +194,26 @@ class _GameBoardViewState extends State<GameBoardView> {
                           int row = sIndex ~/ 3;
                           int column = sIndex % 3;
 
+                          // 선택된 셀의 행과 열 계산
                           int sRow = val.position!.index! ~/ 9;
                           int sColumn = val.position!.index! % 9;
+
+                          // 선택된 셀의 인덱스
                           bool selectCell =
                               val.position!.index == sudoku.selectPixel.index;
 
+                          // 선택된 셀과 같은 행과 열인지의 bool
                           bool selectGrid = sudoku.getSelectRow == sRow ||
                               sudoku.getSelectColumn == sColumn;
+
+                          // 처음 게임이 생성될 때 있던 숫자인지 유저가 입력한 숫자인지의 bool
+                          bool isPrefillNum =
+                              _puzzle.board()!.cellAt(val.position!).prefill()!;
+                          bool isEmptyNum = _puzzle
+                                  .board()!
+                                  .cellAt(val.position!)
+                                  .getValue() ==
+                              0;
 
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
@@ -245,9 +258,11 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   fontSize: size.width(24),
                                   fontWeight: FontWeight.w500,
                                   height: 0,
-                                  color: selectCell
-                                      ? ColorConfig.blue500()
-                                      : ColorConfig.grey400(),
+                                  color: !isPrefillNum && !isEmptyNum
+                                      ? Colors.black
+                                      : selectCell
+                                          ? ColorConfig.blue500()
+                                          : ColorConfig.grey400(),
                                 ),
                               ),
                             ),
@@ -276,9 +291,15 @@ class _GameBoardViewState extends State<GameBoardView> {
                       right:
                           index == 8 ? 0 : size.width(5), // 마지막 요소에는 오른쪽 패딩만 적용
                     ),
-                    child: InputButton(
-                      text: '${index + 1}',
-                      color: ColorConfig.blue300(),
+                    child: InkWell(
+                      onTap: () {
+                        sudoku.insertNum = index + 1;
+                        setState(() {});
+                      },
+                      child: InputButton(
+                        text: '${index + 1}',
+                        color: ColorConfig.blue300(),
+                      ),
                     ),
                   );
                 }),

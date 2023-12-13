@@ -225,6 +225,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                           return InkWell(
                             onTap: () {
                               sudoku.clickPixel(val.getPosition()!);
+                              sudoku.initLastInsertNum = 0;
                               setState(() {});
                             },
                             child: Container(

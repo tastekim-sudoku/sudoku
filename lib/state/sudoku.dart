@@ -23,11 +23,16 @@ class SudokuState extends GetxController {
   get getLastInsertNum => lastInsertNum.value;
   get getSelectRow => selectRow.value;
   get getSelectColumn => selectColumn.value;
+
+  set initLastInsertNum (int num) {
+    lastInsertNum.value = 0;
+  }
   
   /// cell 에 숫자 입력하기
   set insertNum(int num) {
+    bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
     // 아직 선택되지 않은 상태
-    if (selectPixel.grid.x == -2 && selectPixel.grid.y == -2) {
+    if (isSelectedCell) {
       return;
     }
 
@@ -66,14 +71,13 @@ class SudokuState extends GetxController {
 
   /// cell 에 숫자 제거하기
   void removeNum() {
-    Position position = Position(index: selectPixel);
-    bool isPrefill = _puzzle.value.board()!.cellAt(position).prefill()!;
+    bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
+    bool isPrefill = _puzzle.value.board()!.cellAt(selectPixel).prefill()!;
 
-    if (selectPixel == 81 || isPrefill) {
+    if (isSelectedCell || isPrefill) {
       return;
     } else {
-      Position position = Position(index: selectPixel);
-      _puzzle.value.board()!.cellAt(position).setValue(0);
+      _puzzle.value.board()!.cellAt(selectPixel).setValue(0);
     }
   }
 

@@ -215,6 +215,16 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   .getValue() ==
                               0;
 
+                          // 입력된 셀의 숫자가 올바른 값인지 bool
+                          bool isCorrect = _puzzle
+                                  .solvedBoard()!
+                                  .cellAt(val.position!)
+                                  .getValue() ==
+                              _puzzle
+                                  .board()!
+                                  .cellAt(val.position!)
+                                  .getValue();
+
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
                           if (row == 0) margin = margin.copyWith(top: 0);
@@ -260,7 +270,9 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   fontWeight: FontWeight.w500,
                                   height: 0,
                                   color: !isPrefillNum && !isEmptyNum
-                                      ? ColorConfig.grey700()
+                                      ? isCorrect
+                                          ? ColorConfig.grey700()
+                                          : ColorConfig.red()
                                       : selectCell
                                           ? ColorConfig.blue500()
                                           : ColorConfig.grey400(),

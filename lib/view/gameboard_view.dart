@@ -260,7 +260,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   fontWeight: FontWeight.w500,
                                   height: 0,
                                   color: !isPrefillNum && !isEmptyNum
-                                      ? Colors.black
+                                      ? ColorConfig.grey700()
                                       : selectCell
                                           ? ColorConfig.blue500()
                                           : ColorConfig.grey400(),

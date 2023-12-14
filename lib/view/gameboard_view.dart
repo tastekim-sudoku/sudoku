@@ -148,18 +148,18 @@ class _GameBoardViewState extends State<GameBoardView> {
                     /// 여기에 segment 를 넣으면 될 듯.
 
                     // 행과 열 계산
-                    int row = bIndex ~/ 3;
-                    int column = bIndex % 3;
+                    int bRow = bIndex ~/ 3;
+                    int bColumn = bIndex % 3;
 
                     // getSegment 하면 될 줄 알았는데 더럽게 안되고있음
                     // getSegment 내부 로직을 가져와서 하니까 됨.
-                    List<List<Cell>> _matrix = _puzzle.board()!.matrix()!;
-                    List<Cell> _tmpSeg = [];
+                    List<List<Cell>> matrix = _puzzle.board()!.matrix()!;
+                    List<Cell> tmpSeg = [];
 
                     for (int rInc = 0; rInc < 3; rInc++) {
                       for (int cInc = 0; cInc < 3; cInc++) {
-                        _tmpSeg.add(_matrix![(row * 3) + rInc as int]
-                            [(column * 3) + cInc as int]);
+                        tmpSeg.add(
+                            matrix![(bRow * 3) + rInc][(bColumn * 3) + cInc]);
                       }
                     }
 
@@ -188,11 +188,32 @@ class _GameBoardViewState extends State<GameBoardView> {
                         itemCount: 9,
                         itemBuilder: (context, sIndex) {
                           /// puzzle 의 getSegment 로 cell 나열하기
-                          Cell val = _tmpSeg[sIndex];
+                          Cell val = tmpSeg[sIndex];
 
                           // 행과 열 계산
                           int row = sIndex ~/ 3;
                           int column = sIndex % 3;
+
+                          // 선택된 셀의 행과 열 계산
+                          int sRow = val.position!.index! ~/ 9;
+                          int sColumn = val.position!.index! % 9;
+
+                          // 선택된 셀의 인덱스
+                          bool selectCell =
+                              val.position!.index == sudoku.selectPixel.index;
+
+                          // 선택된 셀과 같은 행과 열인지의 bool
+                          bool selectGrid = sudoku.getSelectRow == sRow ||
+                              sudoku.getSelectColumn == sColumn;
+
+                          // 처음 게임이 생성될 때 있던 숫자인지 유저가 입력한 숫자인지의 bool
+                          bool isPrefillNum =
+                              _puzzle.board()!.cellAt(val.position!).prefill()!;
+                          bool isEmptyNum = _puzzle
+                                  .board()!
+                                  .cellAt(val.position!)
+                                  .getValue() ==
+                              0;
 
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
@@ -204,6 +225,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                           return InkWell(
                             onTap: () {
                               sudoku.clickPixel(val.getPosition()!);
+                              sudoku.initLastInsertNum = 0;
                               setState(() {});
                             },
                             child: Container(
@@ -212,14 +234,22 @@ class _GameBoardViewState extends State<GameBoardView> {
                               height: size.width(36),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: val.position!.index ==
-                                        sudoku.selectPixel.index
+                                color: selectGrid
+                                    ? selectCell
+                                        ? Colors.white
+                                        : ColorConfig.blue50()
+                                    : Colors.white,
+                                border: selectCell
                                     ? Border.all(
                                         color: ColorConfig.blue500(),
                                         width: size.width(2),
                                       )
-                                    : Border.all(width: 0, color: Colors.white,),
+                                    : Border.all(
+                                        width: 2,
+                                        color: selectGrid
+                                            ? ColorConfig.blue50()
+                                            : Colors.white,
+                                      ),
                                 borderRadius:
                                     BorderRadius.circular(size.width(4)),
                               ),
@@ -228,10 +258,12 @@ class _GameBoardViewState extends State<GameBoardView> {
                                 style: TextStyle(
                                   fontSize: size.width(24),
                                   fontWeight: FontWeight.w500,
-                                  color: val.position!.index ==
-                                          sudoku.selectPixel.index
-                                      ? ColorConfig.blue500()
-                                      : ColorConfig.grey400(),
+                                  height: 0,
+                                  color: !isPrefillNum && !isEmptyNum
+                                      ? Colors.black
+                                      : selectCell
+                                          ? ColorConfig.blue500()
+                                          : ColorConfig.grey400(),
                                 ),
                               ),
                             ),
@@ -260,9 +292,15 @@ class _GameBoardViewState extends State<GameBoardView> {
                       right:
                           index == 8 ? 0 : size.width(5), // 마지막 요소에는 오른쪽 패딩만 적용
                     ),
-                    child: InputButton(
-                      text: '${index + 1}',
-                      color: ColorConfig.blue300(),
+                    child: InkWell(
+                      onTap: () {
+                        sudoku.insertNum = index + 1;
+                        setState(() {});
+                      },
+                      child: InputButton(
+                        text: '${index + 1}',
+                        color: ColorConfig.blue300(),
+                      ),
                     ),
                   );
                 }),

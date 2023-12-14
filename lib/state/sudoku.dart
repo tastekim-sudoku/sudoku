@@ -9,6 +9,8 @@ import 'package:sudoku_api/sudoku_api.dart';
 
 class SudokuState extends GetxController {
   Rx<Position> isSelectPixel = Position(row: -2, column: -2).obs;
+  RxInt selectRow = 9.obs;
+  RxInt selectColumn = 9.obs;
   RxInt lastInsertNum = 0.obs;
   RxBool isWrongNum = false.obs;
   RxInt wrongCount = 0.obs;
@@ -19,11 +21,18 @@ class SudokuState extends GetxController {
   get getWrongCount => wrongCount.value;
   get getWrongSelect => isWrongNum.value;
   get getLastInsertNum => lastInsertNum.value;
+  get getSelectRow => selectRow.value;
+  get getSelectColumn => selectColumn.value;
+
+  set initLastInsertNum (int num) {
+    lastInsertNum.value = 0;
+  }
   
   /// cell 에 숫자 입력하기
   set insertNum(int num) {
+    bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
     // 아직 선택되지 않은 상태
-    if (selectPixel == 81) {
+    if (isSelectedCell) {
       return;
     }
 
@@ -35,23 +44,22 @@ class SudokuState extends GetxController {
     }
 
     lastInsertNum.value = num;
-    Position position = Position(index: selectPixel);
 
     // 이 칸에 채울 수 있는지 검증
-    bool isPrefill = _puzzle.value.board()!.cellAt(position).prefill()!;
+    bool isPrefill = _puzzle.value.board()!.cellAt(selectPixel).prefill()!;
     if (isPrefill) {
-      print('already fill: ${_puzzle.value.board()!.cellAt(position).getValue()}');
+      print('already fill: ${_puzzle.value.board()!.cellAt(selectPixel).getValue()}');
       return;
     }
 
     // _puzzle.value.board()!.cellAt(position).addMarkup(num); <- 마크업 기능 (set type)
     
-    _puzzle.value.board()!.cellAt(position).setValue(num);
+    _puzzle.value.board()!.cellAt(selectPixel).setValue(num);
 
     // 유효성 검사. true이면 위반, false이면 유효한 값
-    bool isRowViolated = _puzzle.value.board()!.isRowViolated(position);
-    bool isColViolated = _puzzle.value.board()!.isColumnViolated(position);
-    bool isSegViolated = _puzzle.value.board()!.isSegmentViolated(position);
+    bool isRowViolated = _puzzle.value.board()!.isRowViolated(selectPixel);
+    bool isColViolated = _puzzle.value.board()!.isColumnViolated(selectPixel);
+    bool isSegViolated = _puzzle.value.board()!.isSegmentViolated(selectPixel);
 
     if (isRowViolated || isColViolated || isSegViolated) {
       isWrongNum.value = true;
@@ -59,19 +67,17 @@ class SudokuState extends GetxController {
     } else {
       isWrongNum.value = false;
     }
-    // _puzzle.value.board()!.cellAt(position).setValue(num);
   }
 
   /// cell 에 숫자 제거하기
   void removeNum() {
-    Position position = Position(index: selectPixel);
-    bool isPrefill = _puzzle.value.board()!.cellAt(position).prefill()!;
+    bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
+    bool isPrefill = _puzzle.value.board()!.cellAt(selectPixel).prefill()!;
 
-    if (selectPixel == 81 || isPrefill) {
+    if (isSelectedCell || isPrefill) {
       return;
     } else {
-      Position position = Position(index: selectPixel);
-      _puzzle.value.board()!.cellAt(position).setValue(0);
+      _puzzle.value.board()!.cellAt(selectPixel).setValue(0);
     }
   }
 
@@ -84,26 +90,12 @@ class SudokuState extends GetxController {
   void clickPixel(Position position) {
     if (position.index == isSelectPixel.value.index) {
       isSelectPixel.value = Position(row: -2, column: -2);
+      selectRow.value = 9;
+      selectColumn.value = 9;
     } else {
       isSelectPixel.value = position;
-    }
-  }
-
-  /// 숫자 입력
-  void inputNumber(int number) {
-    if (selectPixel != 81) {
-      print('row: ${selectPixel ~/ 9}');
-      print('col: ${selectPixel % 9}');
-
-      Position position = Position(index: selectPixel);
-      print(position.grid!.x);
-      print(position.grid!.y);
-
-      var mm = _puzzle.value.board()?.toMap();
-      print(mm);
-
-      var cell = _puzzle.value?.fillCell(position, number);
-      print(cell);
+      selectRow.value = position.index! ~/ 9;
+      selectColumn.value = position.index! % 9;
     }
   }
 
@@ -116,14 +108,6 @@ class SudokuState extends GetxController {
 
     Puzzle puzz = Puzzle(puzzleOptions);
     await puzz.generate();
-
-    // for (int i = 0; i < 9; i++) {
-    //   for (int j = 0; j < 9; j++) {
-    //     // gameMap.value[i]?[j] = puzz.board()!.getRow(i)[j].getValue()!;
-    //     /// 각 cell 별 좌표와 값
-    //     print('${puzz.board()!.getRow(i)[j].getPosition()!.grid} : ${puzz.board()!.getRow(i)[j].getValue()!} -> ${puzz.board()!.cellAt(Position(row: i, column: j)).isPristine}');
-    //   }
-    // }
 
     return puzz;
   }

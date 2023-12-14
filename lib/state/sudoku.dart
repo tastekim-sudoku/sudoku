@@ -8,7 +8,8 @@ import 'package:sudoku_api/sudoku_api.dart';
 /// markup: 해당 cell 에 메모된 값. get, set, remove, lastMarkupRemove, clear 등 있음.
 
 class SudokuState extends GetxController {
-  Rx<Position> isSelectPixel = Position(row: -2, column: -2).obs;
+  Rx<Position> isSelectPixel = Position(row: 4, column: 4).obs;
+  RxInt selectIndex = 81.obs;
   RxInt selectRow = 9.obs;
   RxInt selectColumn = 9.obs;
   RxInt lastInsertNum = 0.obs;
@@ -90,10 +91,12 @@ class SudokuState extends GetxController {
   void clickPixel(Position position) {
     if (position.index == isSelectPixel.value.index) {
       isSelectPixel.value = Position(row: -2, column: -2);
+      selectIndex.value = 81;
       selectRow.value = 9;
       selectColumn.value = 9;
     } else {
       isSelectPixel.value = position;
+      selectIndex.value = position.index!;
       selectRow.value = position.index! ~/ 9;
       selectColumn.value = position.index! % 9;
     }

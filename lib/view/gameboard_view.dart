@@ -113,7 +113,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                             width: size.width(4),
                           ),
                           Text(
-                            '4/5',
+                            '${sudoku.getWrongCount}/5',
                             style: TextStyle(
                               color: ColorConfig.grey500(),
                               fontSize: size.width(14),
@@ -189,6 +189,10 @@ class _GameBoardViewState extends State<GameBoardView> {
                         itemBuilder: (context, sIndex) {
                           /// puzzle 의 getSegment 로 cell 나열하기
                           Cell val = tmpSeg[sIndex];
+                          int value = _puzzle
+                              .board()!
+                              .cellAt(val.position!)
+                              .getValue()!;
 
                           // 행과 열 계산
                           int row = sIndex ~/ 3;
@@ -220,10 +224,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   .solvedBoard()!
                                   .cellAt(val.position!)
                                   .getValue() ==
-                              _puzzle
-                                  .board()!
-                                  .cellAt(val.position!)
-                                  .getValue();
+                              _puzzle.board()!.cellAt(val.position!).getValue();
 
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
@@ -309,9 +310,16 @@ class _GameBoardViewState extends State<GameBoardView> {
                         sudoku.insertNum = index + 1;
                         setState(() {});
                       },
+                      borderRadius: BorderRadius.circular(size.width(64)),
                       child: InputButton(
                         text: '${index + 1}',
-                        color: ColorConfig.blue300(),
+                        color: sudoku.selectIndex.value != 81 &&_puzzle
+                                    .board()!
+                                    .cellAt(sudoku.selectPixel)
+                                    .getValue() ==
+                                index + 1
+                            ? ColorConfig.grey200()
+                            : ColorConfig.blue300(),
                       ),
                     ),
                   );

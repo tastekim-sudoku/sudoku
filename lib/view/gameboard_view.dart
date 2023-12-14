@@ -215,7 +215,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   .getValue() ==
                               0;
 
-                          // 입력된 셀의 숫자가 올바른 값인지 bool
+                          // 입력된 셀의 숫자가 올바른 값인지의 bool
                           bool isCorrect = _puzzle
                                   .solvedBoard()!
                                   .cellAt(val.position!)

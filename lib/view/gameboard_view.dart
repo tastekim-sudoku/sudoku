@@ -194,6 +194,8 @@ class _GameBoardViewState extends State<GameBoardView> {
                               .cellAt(val.position!)
                               .getValue()!;
 
+                          print(_puzzle.board()!.cellAt(val.position!));
+
                           // 행과 열 계산
                           int row = sIndex ~/ 3;
                           int column = sIndex % 3;

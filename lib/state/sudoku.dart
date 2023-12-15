@@ -79,6 +79,7 @@ class SudokuState extends GetxController {
       return;
     } else {
       _puzzle.value.board()!.cellAt(selectPixel).setValue(0);
+      lastInsertNum.value = 0;
     }
   }
 

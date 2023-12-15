@@ -336,10 +336,16 @@ class _GameBoardViewState extends State<GameBoardView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FeatureButton(
-                    size: size,
-                    icon: CustomIcon.remove(size.width(28)),
-                    text: '지우기',
+                  InkWell(
+                    onTap: () {
+                      sudoku.removeNum();
+                      setState(() {});
+                    },
+                    child: FeatureButton(
+                      size: size,
+                      icon: CustomIcon.remove(size.width(28)),
+                      text: '지우기',
+                    ),
                   ),
                   SizedBox(
                     width: size.width(72),

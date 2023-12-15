@@ -8,12 +8,14 @@ import 'package:sudoku_api/sudoku_api.dart';
 /// markup: 해당 cell 에 메모된 값. get, set, remove, lastMarkupRemove, clear 등 있음.
 
 class SudokuState extends GetxController {
-  Rx<Position> isSelectPixel = Position(row: -2, column: -2).obs;
-  RxInt selectRow = 9.obs;
-  RxInt selectColumn = 9.obs;
-  RxInt lastInsertNum = 0.obs;
+  Rx<Position> isSelectPixel = Position(row: 4, column: 4).obs; // 선택된 셀 포지션
+  RxInt selectIndex = 81.obs; // 선택된 셀 인덱스
+  RxInt selectRow = 9.obs; // 선택된 셀 행
+  RxInt selectColumn = 9.obs; // 선택된 셀 열
+  RxBool isMemo = false.obs; // 메모 모드인지
+  RxInt lastInsertNum = 0.obs; // 마지막으로 입력한 숫자
   RxBool isWrongNum = false.obs;
-  RxInt wrongCount = 0.obs;
+  RxInt wrongCount = 0.obs; // 오답 갯수
   Rx<Puzzle> _puzzle = Puzzle(PuzzleOptions()).obs;
 
   get selectPixel => isSelectPixel.value;
@@ -23,9 +25,14 @@ class SudokuState extends GetxController {
   get getLastInsertNum => lastInsertNum.value;
   get getSelectRow => selectRow.value;
   get getSelectColumn => selectColumn.value;
+  get getMemoMode => isMemo.value;
 
   set initLastInsertNum (int num) {
     lastInsertNum.value = 0;
+  }
+  /// 메모 기능 활성화/비활성화
+  void memoMode() {
+    isMemo.value = !isMemo.value;
   }
   
   /// cell 에 숫자 입력하기
@@ -78,6 +85,7 @@ class SudokuState extends GetxController {
       return;
     } else {
       _puzzle.value.board()!.cellAt(selectPixel).setValue(0);
+      lastInsertNum.value = 0;
     }
   }
 
@@ -90,10 +98,12 @@ class SudokuState extends GetxController {
   void clickPixel(Position position) {
     if (position.index == isSelectPixel.value.index) {
       isSelectPixel.value = Position(row: -2, column: -2);
+      selectIndex.value = 81;
       selectRow.value = 9;
       selectColumn.value = 9;
     } else {
       isSelectPixel.value = position;
+      selectIndex.value = position.index!;
       selectRow.value = position.index! ~/ 9;
       selectColumn.value = position.index! % 9;
     }

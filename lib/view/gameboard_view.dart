@@ -194,7 +194,8 @@ class _GameBoardViewState extends State<GameBoardView> {
                               .cellAt(val.position!)
                               .getValue()!;
 
-                          print(_puzzle.board()!.cellAt(val.position!));
+                          print(
+                              _puzzle.board()!.cellAt(val.position!).markup());
 
                           // 행과 열 계산
                           int row = sIndex ~/ 3;
@@ -227,6 +228,10 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   .cellAt(val.position!)
                                   .getValue() ==
                               _puzzle.board()!.cellAt(val.position!).getValue();
+
+                          // 메모가 있는 셀인지의 bool
+                          bool hasMemo =
+                              _puzzle.board()!.cellAt(val.position!).markup();
 
                           // 마진 설정
                           EdgeInsets margin = EdgeInsets.all(size.width(1));
@@ -266,21 +271,49 @@ class _GameBoardViewState extends State<GameBoardView> {
                                 borderRadius:
                                     BorderRadius.circular(size.width(4)),
                               ),
-                              child: Text(
-                                '${val.getValue() == 0 ? '' : val.getValue()}',
-                                style: TextStyle(
-                                  fontSize: size.width(24),
-                                  fontWeight: FontWeight.w500,
-                                  height: 0,
-                                  color: !isPrefillNum && !isEmptyNum
-                                      ? isCorrect
-                                          ? ColorConfig.grey700()
-                                          : ColorConfig.red()
-                                      : selectCell
-                                          ? ColorConfig.blue500()
-                                          : ColorConfig.grey400(),
-                                ),
-                              ),
+                              child: hasMemo && _puzzle.board()!.cellAt(val.position!).getValue() == 0
+                                  ? Center(
+                                    child: GridView.builder(
+                                        padding: EdgeInsets.zero,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                        ),
+                                        itemCount: _puzzle.board()!.cellAt(val.position!).getMarkup()!.length,
+                                        itemBuilder: (context, index) {
+                                          List<int> markup = _puzzle
+                                              .board()!
+                                              .cellAt(val.position!)
+                                              .getMarkup()!
+                                              .toList();
+                                          return Text(
+                                            '${markup[index]}',
+                                            style: TextStyle(
+                                              fontSize: size.width(10),
+                                              height: 0,
+                                              fontWeight: FontWeight.w500,
+                                              color: ColorConfig.grey700(),
+                                            ),
+                                          );
+                                        }),
+                                  )
+                                  : Text(
+                                      '${val.getValue() == 0 ? '' : val.getValue()}',
+                                      style: TextStyle(
+                                        fontSize: size.width(24),
+                                        fontWeight: FontWeight.w500,
+                                        height: 0,
+                                        color: !isPrefillNum && !isEmptyNum
+                                            ? isCorrect
+                                                ? ColorConfig.grey700()
+                                                : ColorConfig.red()
+                                            : selectCell
+                                                ? ColorConfig.blue500()
+                                                : ColorConfig.grey400(),
+                                      ),
+                                    ),
                             ),
                           );
                         },
@@ -309,17 +342,29 @@ class _GameBoardViewState extends State<GameBoardView> {
                     ),
                     child: InkWell(
                       onTap: () {
-                        sudoku.insertNum = index + 1;
+                        if (sudoku.getMemoMode) {
+                          Set<int> markup = _puzzle.board()!.cellAt(sudoku.selectPixel).getMarkup()!;
+                          bool hasNum = markup.contains(index + 1);
+                          if (hasNum) {
+                            _puzzle.board()!.cellAt(sudoku.selectPixel).removeMarkup(index + 1);
+                          } else {
+                            _puzzle.board()!.cellAt(sudoku.selectPixel).addMarkup(index + 1);
+                          }
+                        } else {
+                          sudoku.insertNum = index + 1;
+                        }
+
                         setState(() {});
                       },
                       borderRadius: BorderRadius.circular(size.width(64)),
                       child: InputButton(
                         text: '${index + 1}',
-                        color: sudoku.selectIndex.value != 81 &&_puzzle
-                                    .board()!
-                                    .cellAt(sudoku.selectPixel)
-                                    .getValue() ==
-                                index + 1
+                        color: sudoku.selectIndex.value != 81 &&
+                                _puzzle
+                                        .board()!
+                                        .cellAt(sudoku.selectPixel)
+                                        .getValue() ==
+                                    index + 1
                             ? ColorConfig.grey200()
                             : ColorConfig.blue300(),
                       ),
@@ -345,6 +390,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                     },
                     child: FeatureButton(
                       size: size,
+                      color: ColorConfig.grey400(),
                       icon: CustomIcon.remove(size.width(28)),
                       text: '지우기',
                     ),
@@ -352,16 +398,24 @@ class _GameBoardViewState extends State<GameBoardView> {
                   SizedBox(
                     width: size.width(72),
                   ),
-                  FeatureButton(
-                    size: size,
-                    icon: CustomIcon.memo(size.width(28)),
-                    text: '메모',
+                  InkWell(
+                    onTap: () {
+                      sudoku.memoMode();
+                      setState(() {});
+                    },
+                    child: FeatureButton(
+                      size: size,
+                      color: sudoku.getMemoMode ? ColorConfig.blue400() : ColorConfig.grey400(),
+                      icon: CustomIcon.memo(size.width(28)),
+                      text: '메모',
+                    ),
                   ),
                   SizedBox(
                     width: size.width(72),
                   ),
                   FeatureButton(
                     size: size,
+                    color: ColorConfig.grey400(),
                     icon: CustomIcon.hint(size.width(28)),
                     text: '힌트',
                   ),

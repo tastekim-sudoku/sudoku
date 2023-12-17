@@ -344,7 +344,13 @@ class _GameBoardViewState extends State<GameBoardView> {
                       onTap: () {
                         if (sudoku.getMemoMode) {
                           Set<int> markup = _puzzle.board()!.cellAt(sudoku.selectPixel).getMarkup()!;
+                          bool isPrefilled = _puzzle.board()!.cellAt(sudoku.selectPixel).prefill()!;
                           bool hasNum = markup.contains(index + 1);
+
+                          if (isPrefilled) {
+                            return;
+                          }
+
                           if (hasNum) {
                             _puzzle.board()!.cellAt(sudoku.selectPixel).removeMarkup(index + 1);
                           } else {

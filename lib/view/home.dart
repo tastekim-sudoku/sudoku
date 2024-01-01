@@ -29,24 +29,25 @@ class _HomeState extends State<Home> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => FutureBuilder(
-                        future: SudokuState().generateBoard('random'),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            Puzzle puzzle = snapshot.data!;
-                            sudoku.newGame = puzzle;
-                            return GameBoardView(
-                              puzzle: puzzle,
-                            );
-                            // return GameBoard(
-                            //   puzzle: puzzle,
-                            // );
-                          }
-                          return CircularProgressIndicator();
-                        }),
-                  ),
+                  MaterialPageRoute(builder: (context) => GameBoardView()),
+                  // MaterialPageRoute(
+                  //   builder: (context) => FutureBuilder(
+                  //       future: SudokuState().generateBoard('random'),
+                  //       builder: (context, snapshot) {
+                  //         if (snapshot.connectionState ==
+                  //             ConnectionState.done) {
+                  //           Puzzle puzzle = snapshot.data!;
+                  //           sudoku.newGame = puzzle;
+                  //           return GameBoardView(
+                  //             puzzle: puzzle,
+                  //           );
+                  //           // return GameBoard(
+                  //           //   puzzle: puzzle,
+                  //           // );
+                  //         }
+                  //         return CircularProgressIndicator();
+                  //       }),
+                  // ),
                   (route) => false,
                 );
               },

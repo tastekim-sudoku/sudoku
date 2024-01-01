@@ -10,19 +10,17 @@ class FeatureButton extends StatelessWidget {
     required this.size,
     required this.text,
     required this.icon,
-    required this.color,
   });
 
   final SizeConfig size;
   final String text;
   final SvgPicture icon;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: size.width(31),
-      height: size.width(50),
+      width: size.width(42),
+      height: size.width(52),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -37,7 +35,7 @@ class FeatureButton extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: size.width(12),
-              color: color,
+              color: ColorConfig.grey400(),
               height: 0.12,
               letterSpacing: -0.13,
             ),

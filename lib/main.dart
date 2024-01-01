@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku/state/sudoku.dart';
 import 'package:sudoku/view/home.dart';
+import 'package:get/get.dart';
 
 void main() {
+  Get.put(SudokuState());
   runApp(const MyApp());
 }
 

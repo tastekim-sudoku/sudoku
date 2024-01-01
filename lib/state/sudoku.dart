@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 
@@ -16,10 +17,17 @@ class SudokuState extends GetxController {
   RxInt lastInsertNum = 0.obs; // 마지막으로 입력한 숫자
   RxBool isWrongNum = false.obs;
   RxInt wrongCount = 0.obs; // 오답 갯수
-  Rx<Puzzle> _puzzle = Puzzle(PuzzleOptions()).obs;
+  Rx<Puzzle> puzzle = Puzzle(PuzzleOptions()).obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    puzzle.value = await generateBoard('random', 81);
+    debugPrint('puzzle controller init');
+  }
 
   get selectPixel => isSelectPixel.value;
-  get getPuzzle => _puzzle.value;
+  get getPuzzle => puzzle.value;
   get getWrongCount => wrongCount.value;
   get getWrongSelect => isWrongNum.value;
   get getLastInsertNum => lastInsertNum.value;
@@ -53,20 +61,20 @@ class SudokuState extends GetxController {
     lastInsertNum.value = num;
 
     // 이 칸에 채울 수 있는지 검증
-    bool isPrefill = _puzzle.value.board()!.cellAt(selectPixel).prefill()!;
+    bool isPrefill = puzzle.value.board()!.cellAt(selectPixel).prefill()!;
     if (isPrefill) {
-      print('already fill: ${_puzzle.value.board()!.cellAt(selectPixel).getValue()}');
+      print('already fill: ${puzzle.value.board()!.cellAt(selectPixel).getValue()}');
       return;
     }
 
     // _puzzle.value.board()!.cellAt(position).addMarkup(num); <- 마크업 기능 (set type)
     
-    _puzzle.value.board()!.cellAt(selectPixel).setValue(num);
+    puzzle.value.board()!.cellAt(selectPixel).setValue(num);
 
     // 유효성 검사. true이면 위반, false이면 유효한 값
-    bool isRowViolated = _puzzle.value.board()!.isRowViolated(selectPixel);
-    bool isColViolated = _puzzle.value.board()!.isColumnViolated(selectPixel);
-    bool isSegViolated = _puzzle.value.board()!.isSegmentViolated(selectPixel);
+    bool isRowViolated = puzzle.value.board()!.isRowViolated(selectPixel);
+    bool isColViolated = puzzle.value.board()!.isColumnViolated(selectPixel);
+    bool isSegViolated = puzzle.value.board()!.isSegmentViolated(selectPixel);
 
     if (isRowViolated || isColViolated || isSegViolated) {
       isWrongNum.value = true;
@@ -79,19 +87,19 @@ class SudokuState extends GetxController {
   /// cell 에 숫자 제거하기
   void removeNum() {
     bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
-    bool isPrefill = _puzzle.value.board()!.cellAt(selectPixel).prefill()!;
+    bool isPrefill = puzzle.value.board()!.cellAt(selectPixel).prefill()!;
 
     if (isSelectedCell || isPrefill) {
       return;
     } else {
-      _puzzle.value.board()!.cellAt(selectPixel).setValue(0);
+      puzzle.value.board()!.cellAt(selectPixel).setValue(0);
       lastInsertNum.value = 0;
     }
   }
 
   /// 스도쿠 보드 state set
   set newGame(Puzzle puz) {
-    _puzzle.value = puz;
+    puzzle.value = puz;
   }
 
   /// 클릭한 픽셀 업데이트
@@ -110,15 +118,16 @@ class SudokuState extends GetxController {
   }
 
   /// 스도쿠 생성
-  Future<Puzzle> generateBoard(String type) async {
+  Future<Puzzle> generateBoard(String type, int clues) async {
     PuzzleOptions puzzleOptions = PuzzleOptions(
       patternName: type,
-      clues: 38,
+      clues: clues,
     );
 
     Puzzle puzz = Puzzle(puzzleOptions);
     await puzz.generate();
+    puzzle.value = puzz;
 
-    return puzz;
+    return puzzle.value;
   }
 }

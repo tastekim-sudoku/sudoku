@@ -17,28 +17,49 @@ class CustomIcon {
   );
 
   static SvgPicture pause(double size) => SvgPicture.asset(
-    'assets/icons/Subtract.svg',
+    'assets/icons/pause.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture play(double size) => SvgPicture.asset(
+    'assets/icons/play.svg',
     height: size,
     width: size,
     fit: BoxFit.scaleDown,
   );
 
   static SvgPicture remove(double size) => SvgPicture.asset(
-    'assets/icons/icon-pencil-mono.svg',
+    'assets/icons/eraser.svg',
     height: size,
     width: size,
     fit: BoxFit.scaleDown,
   );
 
-  static SvgPicture memo(double size) => SvgPicture.asset(
-    'assets/icons/Group.svg',
+  static SvgPicture memoOn(double size) => SvgPicture.asset(
+    'assets/icons/group-on.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture memoOff(double size) => SvgPicture.asset(
+    'assets/icons/group-off.svg',
     height: size,
     width: size,
     fit: BoxFit.scaleDown,
   );
 
   static SvgPicture hint(double size) => SvgPicture.asset(
-    'assets/icons/icon-lock-mono.svg',
+    'assets/icons/hint-ad.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture undo(double size) => SvgPicture.asset(
+    'assets/icons/undo.svg',
     height: size,
     width: size,
     fit: BoxFit.scaleDown,

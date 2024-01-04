@@ -51,8 +51,29 @@ class CustomIcon {
     fit: BoxFit.scaleDown,
   );
 
-  static SvgPicture hint(double size) => SvgPicture.asset(
+  static SvgPicture hintAd(double size) => SvgPicture.asset(
     'assets/icons/hint-ad.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture hintOne(double size) => SvgPicture.asset(
+    'assets/icons/hint-one.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture hintTwo(double size) => SvgPicture.asset(
+    'assets/icons/hint-two.svg',
+    height: size,
+    width: size,
+    fit: BoxFit.scaleDown,
+  );
+
+  static SvgPicture hintThree(double size) => SvgPicture.asset(
+    'assets/icons/hint-three.svg',
     height: size,
     width: size,
     fit: BoxFit.scaleDown,

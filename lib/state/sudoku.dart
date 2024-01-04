@@ -17,12 +17,14 @@ class SudokuState extends GetxController {
   RxInt lastInsertNum = 0.obs; // 마지막으로 입력한 숫자
   RxBool isWrongNum = false.obs;
   RxInt wrongCount = 0.obs; // 오답 갯수
+  RxInt leftHint = 3.obs; // 남은 힌트 갯수
+  RxBool isHint = false.obs; // 힌트 사용 여부
   Rx<Puzzle> puzzle = Puzzle(PuzzleOptions()).obs;
 
   @override
   void onInit() async {
     super.onInit();
-    puzzle.value = await generateBoard('random', 81);
+    puzzle.value = await generateBoard('random', 80);
     debugPrint('puzzle controller init');
   }
 
@@ -34,13 +36,10 @@ class SudokuState extends GetxController {
   get getSelectRow => selectRow.value;
   get getSelectColumn => selectColumn.value;
   get getMemoMode => isMemo.value;
+  get getHintCount => leftHint.value;
 
   set initLastInsertNum (int num) {
     lastInsertNum.value = 0;
-  }
-  /// 메모 기능 활성화/비활성화
-  void memoMode() {
-    isMemo.value = !isMemo.value;
   }
   
   /// cell 에 숫자 입력하기
@@ -84,6 +83,11 @@ class SudokuState extends GetxController {
     }
   }
 
+  /// 스도쿠 보드 state set
+  set newGame(Puzzle puz) {
+    puzzle.value = puz;
+  }
+
   /// cell 에 숫자 제거하기
   void removeNum() {
     bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
@@ -97,9 +101,9 @@ class SudokuState extends GetxController {
     }
   }
 
-  /// 스도쿠 보드 state set
-  set newGame(Puzzle puz) {
-    puzzle.value = puz;
+  /// 메모 기능 활성화/비활성화
+  void memoMode() {
+    isMemo.value = !isMemo.value;
   }
 
   /// 클릭한 픽셀 업데이트
@@ -117,6 +121,32 @@ class SudokuState extends GetxController {
     }
   }
 
+  /// 힌트 사용하기
+  void useHint() {
+    bool isSelectedCell = selectPixel.grid.x == -2 && selectPixel.grid.y == -2;
+    // 아직 선택되지 않은 상태
+    if (isSelectedCell) {
+      debugPrint('선택된 셀이 없음');
+      return;
+    }
+
+    // 이 칸에 채울 수 있는지 검증
+    bool isPrefill = puzzle.value.board()!.cellAt(selectPixel).prefill()!;
+    if (isPrefill) {
+      debugPrint('이미 채워진 칸');
+      return;
+    }
+
+    if (leftHint.value == 0) {
+      debugPrint('힌트 없음');
+      return;
+    }
+
+    int hintNum = puzzle.value.solvedBoard()!.cellAt(selectPixel).getValue()!;
+    insertNum = hintNum;
+    leftHint.value -= 1;
+  }
+
   /// 스도쿠 생성
   Future<Puzzle> generateBoard(String type, int clues) async {
     PuzzleOptions puzzleOptions = PuzzleOptions(
@@ -127,6 +157,12 @@ class SudokuState extends GetxController {
     Puzzle puzz = Puzzle(puzzleOptions);
     await puzz.generate();
     puzzle.value = puzz;
+
+    /// 나중에 이렇게 바꿔야 할 듯?
+    // puzz.board()!.startListening();
+    // puzz.onBoardChange((value) {
+    //
+    // });
 
     return puzzle.value;
   }

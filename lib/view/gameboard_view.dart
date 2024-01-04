@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:sudoku/state/sudoku.dart';
 import 'package:sudoku/util/icon.dart';
@@ -16,10 +17,12 @@ import 'gameboard/input_buttons.dart';
 class GameBoardView extends StatefulWidget {
   const GameBoardView({
     super.key,
+    required this.clues,
     // required this.puzzle,
   });
 
   // final Puzzle puzzle;
+  final int clues;
 
   @override
   State<GameBoardView> createState() => _GameBoardViewState();
@@ -31,6 +34,8 @@ class _GameBoardViewState extends State<GameBoardView> {
   int _seconds = 0;
   bool _isRunning = false;
   late Timer _timer;
+  bool _isHover = false;
+  int _selectedInputIndex = 10;
 
   @override
   void initState() {
@@ -71,7 +76,7 @@ class _GameBoardViewState extends State<GameBoardView> {
   }
 
   Future<Puzzle> _generateBoard() async {
-    return await sudoku.generateBoard('spring', 31);
+    return await sudoku.generateBoard('random', widget.clues);
   }
 
   List<Cell> getSegment(int index) {
@@ -91,6 +96,20 @@ class _GameBoardViewState extends State<GameBoardView> {
     }
 
     return tmpSeg;
+  }
+
+  SvgPicture getHintIcon(double size) {
+    final hint = sudoku.getHintCount;
+    if (hint == 3) {
+      return CustomIcon.hintThree(size);
+    }
+    if (hint == 2) {
+      return CustomIcon.hintTwo(size);
+    }
+    if (hint == 1) {
+      return CustomIcon.hintOne(size);
+    }
+    return CustomIcon.hintAd(size);
   }
 
   @override
@@ -188,13 +207,12 @@ class _GameBoardViewState extends State<GameBoardView> {
                                     },
                                     child: _isRunning
                                         ? CustomIcon.pause(
-                                      size.width(22),
-                                    )
+                                            size.width(22),
+                                          )
                                         : CustomIcon.play(
-                                      size.width(22),
-                                    ),
+                                            size.width(22),
+                                          ),
                                   ),
-
                                   SizedBox(
                                     width: size.width(6),
                                   ),
@@ -391,7 +409,13 @@ class _GameBoardViewState extends State<GameBoardView> {
                                   : size.width(5), // 마지막 요소에는 오른쪽 패딩만 적용
                             ),
                             child: InkWell(
-                              onTap: () {
+                              onTapDown: (value) {
+                                setState(() {
+                                  _selectedInputIndex = index;
+                                  _isHover = true;
+                                });
+                              },
+                              onTapUp: (value) {
                                 if (sudoku.getMemoMode) {
                                   Set<int> markup = _puzzle
                                       .board()!
@@ -421,14 +445,17 @@ class _GameBoardViewState extends State<GameBoardView> {
                                 } else {
                                   sudoku.insertNum = index + 1;
                                 }
-
+                                _isHover = false;
+                                _selectedInputIndex = 10;
                                 setState(() {});
                               },
                               borderRadius:
                                   BorderRadius.circular(size.width(64)),
                               child: InputButton(
                                 text: '${index + 1}',
-                                color: getButtonColor(index),
+                                color: _isHover && _selectedInputIndex == index
+                                    ? ColorConfig.blue200()
+                                    : ColorConfig.blue300(),
                               ),
                             ),
                           );
@@ -441,7 +468,8 @@ class _GameBoardViewState extends State<GameBoardView> {
 
                     /// 지우기, 메모, 힌트 아이콘
                     SizedBox(
-                      height: size.width(70),
+                      width: size.width(295),
+                      height: size.width(52),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -457,7 +485,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                             ),
                           ),
                           SizedBox(
-                            width: size.width(54),
+                            width: size.width(42),
                           ),
                           InkWell(
                             onTap: () {
@@ -471,7 +499,7 @@ class _GameBoardViewState extends State<GameBoardView> {
                             ),
                           ),
                           SizedBox(
-                            width: size.width(54),
+                            width: size.width(42),
                           ),
                           InkWell(
                             onTap: () {
@@ -487,12 +515,18 @@ class _GameBoardViewState extends State<GameBoardView> {
                             ),
                           ),
                           SizedBox(
-                            width: size.width(54),
+                            width: size.width(42),
                           ),
-                          FeatureButton(
-                            size: size,
-                            icon: CustomIcon.hint(size.width(30)),
-                            text: '힌트',
+                          InkWell(
+                            onTap: () {
+                              sudoku.useHint();
+                              setState(() {});
+                            },
+                            child: FeatureButton(
+                              size: size,
+                              icon: getHintIcon(size.width(30)),
+                              text: '힌트',
+                            ),
                           ),
                         ],
                       ),
@@ -502,7 +536,7 @@ class _GameBoardViewState extends State<GameBoardView> {
               ),
             );
           }
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         });
   }
 }
